@@ -21,7 +21,7 @@ To use the ExceptionAnalyzer, you will need an API key from OpenAI. Replace the 
 ```csharp
 using ExceptionAnalyzer;
 using ExceptionAnalyzer.Models;
-
+```
 
 To analyze an exception, call the GetAnalyzedException extension method on an instance of an exception:
 
@@ -36,8 +36,10 @@ catch (Exception ex)
     Console.WriteLine(analyzedException.UserMessage);
     Console.WriteLine(analyzedException.DeveloperDetails);
 }
+```
 
 The `GetAnalyzedException` method returns an instance of `AnalyzedException<T>`, where `T` is the type of the exception. The returned object contains the following properties:
+
 
 - `ErrorAnalysis`: A detailed analysis of the error, including possible causes and affected components
 - `UserMessage`: An easy-to-understand message for the user, providing an overview of the occurred error without being too technical
