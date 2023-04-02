@@ -20,7 +20,7 @@ namespace ExceptionAnalyzer.ApiKeyBalancer
 
 	public static class ApiKeyService
 	{
-		[NotNull] private static readonly HashSet<ApiKey> ApiKeys = new HashSet<ApiKey>();
+		[NotNull] private static readonly HashSet<ApiKey> ApiKeys = new ();
 
 		public static string Lend()
 		{
