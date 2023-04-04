@@ -37,7 +37,7 @@ namespace ExceptionAnalyzer
 			if (exception == null) throw new ArgumentNullException(nameof(exception));
 			List<ChatMessage> currentMessages = ChatMessages.ToList();
 			currentMessages.Add(new ChatMessage(ChatMessageRole.User, $"{CultureInfo.CurrentCulture.TwoLetterISOLanguageName}:\r\n{exception.Message}\r\n{exception.StackTrace}"));
-			ChatRequest chatRequest = new ChatRequest {Model = Model.ChatGPTTurbo, Temperature = 0.4, MaxTokens = 800, Messages = currentMessages};
+			ChatRequest chatRequest = new ChatRequest {Model = Model.ChatGPTTurbo, Temperature = 0.6, MaxTokens = 800, Messages = currentMessages};
 			string authApiKey = null;
 			string response;
 			try
