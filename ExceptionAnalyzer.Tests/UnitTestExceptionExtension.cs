@@ -3,6 +3,11 @@
 using System.Globalization;
 using ExceptionAnalyzer.ApiKeyBalancer;
 using ExceptionAnalyzer.Models;
+using Moq;
+using Newtonsoft.Json;
+using OpenAI_API;
+using OpenAI_API.Chat;
+using Shouldly;
 using Xunit.Abstractions;
 
 #endregion
@@ -15,9 +20,51 @@ namespace ExceptionAnalyzer.Tests
 
 		private readonly ITestOutputHelper _testOutputHelper;
 
+		[Fact] public void GetAnalyzedException_TestOpenAiApiCall_ResultIsReturned()
+		{
+			#region Arrange
+
+			const string key = "sk-thisisonlyatestvalue";
+			const string response = @"
+									{
+										""errorAnalysis"": ""Sample error analysis"",
+										""userMessage"": ""Sample user message"",
+										""developerDetails"": ""Sample developer details"",
+										""solutions"": [
+											""Sample solution 1"",
+											""Sample solution 2""
+										]
+									}";
+			InternalAnalyzedException internalAnalyzedException = JsonConvert.DeserializeObject<InternalAnalyzedException>(response)!;
+			ApiKeyService.Register(key);
+			ChatResult chatResult = new() {Choices = new[] {new ChatChoice {Message = new ChatMessage {Content = response}}}};
+			Mock<IOpenAIAPI> openAiApiMock = new();
+			openAiApiMock.SetupProperty(api => api.Auth, new APIAuthentication(key));
+			openAiApiMock.Setup(api => api.Chat.CreateChatCompletionAsync(It.IsAny<ChatRequest>())).Returns(Task.FromResult(chatResult));
+			ExceptionService exceptionService = new();
+			ArgumentNullException testingException = new(nameof(openAiApiMock));
+
+			#endregion Arrange
+
+			#region Act
+
+			AnalyzedException<ArgumentNullException> analyzedExceptionInternal = exceptionService.GetAnalyzedExceptionInternal(testingException, openAiApiMock.Object!)!;
+
+			#endregion Act
+
+			#region Assert
+
+			internalAnalyzedException!.DeveloperDetails.ShouldBe(analyzedExceptionInternal!.DeveloperDetails);
+			internalAnalyzedException.ErrorAnalysis.ShouldBe(analyzedExceptionInternal.ErrorAnalysis);
+			internalAnalyzedException.UserMessage.ShouldBe(analyzedExceptionInternal.UserMessage);
+			internalAnalyzedException.Solutions.ShouldBe(analyzedExceptionInternal.Suggestions);
+
+			#endregion Assert
+		}
+
 		[Fact] public void GetAnalyzedException_SendExceptionToAiForAnalyze_AnalyzedExceptionFieldsAreFilled()
 		{
-#region Arrange
+			#region Arrange
 
 			ApiKeyService.Register(@"your key");
 			CultureInfo.CurrentCulture = new CultureInfo("");
@@ -37,15 +84,15 @@ namespace ExceptionAnalyzer.Tests
 				exception = ex;
 			}
 
-#endregion
+			#endregion
 
-#region Act
+			#region Act
 
 			AnalyzedException<Exception?> analyzedException = exception.GetAnalyzedException();
 
-#endregion
+			#endregion
 
-#region Assert
+			#region Assert
 
 			Assert.NotNull(analyzedException);
 			Assert.NotNull(analyzedException.DeveloperDetails);
@@ -53,7 +100,7 @@ namespace ExceptionAnalyzer.Tests
 			Assert.NotNull(analyzedException.UserMessage);
 			Assert.NotEmpty(analyzedException.Suggestions);
 
-#endregion
+			#endregion
 		}
 	}
 
