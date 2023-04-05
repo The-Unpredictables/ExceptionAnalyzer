@@ -15,3 +15,4 @@ public static class ExceptionExtension
 	
 	public static AnalyzedException<T> GetAnalyzedException<T>([NotNull] this T exception) where T : Exception => ExceptionService.GetAnalyzedException(exception);
 }
+
