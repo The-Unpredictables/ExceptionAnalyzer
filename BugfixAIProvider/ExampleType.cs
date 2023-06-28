@@ -24,11 +24,9 @@
 #endregion
 namespace BigfixAIProvider.Example;
 
-
 public class ExampleType
 {
-
-	public string ExampleProperty { get; set; }
+    public string? ExampleProperty { get; set; }
 
 	public void ExampleMethod()
 	{

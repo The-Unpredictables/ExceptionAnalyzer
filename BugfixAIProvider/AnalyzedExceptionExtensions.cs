@@ -23,30 +23,28 @@
 //                  ---------------------------------------------------------------
 #endregion
 
-using System.IO.Pipes;
 using BigfixAIProvider;
 using BugfixAIProvider.Helper;
 using ExceptionAnalyzer.Models;
-using ICSharpCode.Decompiler.CSharp;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace BugfixAIProvider;
 
 public static class AnalyzedExceptionExtensions
 {
-	private static Setup _setup;
+	private static readonly Setup Setup;
 	
 	static AnalyzedExceptionExtensions()
 	{
-		_setup = new Setup();
+		Setup = new Setup();
 	}
 
-	public async static Task<BugFixResult> TryDevelopBugfix<T>(this AnalyzedException<T> analyzedException, CancellationToken cancellationToken = default) where T : Exception
+	public static async Task<BugFixResult?> TryDevelopBugfix<T>(this AnalyzedException<T> analyzedException, CancellationToken cancellationToken = default) where T : Exception
 	{
 		Guid tan = Guid.NewGuid();
-		await _setup.Connection.InvokeAsync("TryBugfixing", tan, analyzedException, cancellationToken);
-		BugFixResult result = null;
-		await AsyncHelper.Loop(() => _setup.BugFixResults.TryGetValue(tan, out result), 1000, () => _setup.BugFixResults.ContainsKey(tan));
+		await Setup.Connection.InvokeAsync("TryBugfixing", tan, analyzedException, cancellationToken);
+		BugFixResult? result = null;
+		await AsyncHelper.Loop(() => Setup.BugFixResults.TryGetValue(tan, out result), 1000, () => Setup.BugFixResults.ContainsKey(tan));
 		return result;
 	}
 }

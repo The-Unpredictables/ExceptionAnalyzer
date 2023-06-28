@@ -26,7 +26,7 @@ namespace BigfixAIProvider;
 
 public class CodePointer
 {
-	public string FullName { get; set; }
+	public string? FullName { get; set; }
 	
 	public CodeType Type { get; set; }
 	

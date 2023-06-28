@@ -26,7 +26,7 @@ namespace BigfixAIProvider;
 
 public class BugFixResult
 {
-	public string BugDescription { get; set; }
-	public string BugExplanation { get; set; }
-	public string BugFix { get; set; }
+	public string? BugDescription { get; set; }
+	public string? BugExplanation { get; set; }
+	public string? BugFix { get; set; }
 }
