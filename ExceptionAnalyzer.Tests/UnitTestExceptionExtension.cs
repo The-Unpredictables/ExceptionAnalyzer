@@ -6,7 +6,6 @@ using Moq;
 using Newtonsoft.Json;
 using Rystem.OpenAi;
 using Rystem.OpenAi.Chat;
-using Shouldly;
 using Xunit.Abstractions;
 
 #endregion
@@ -16,8 +15,7 @@ namespace ExceptionAnalyzer.Tests
 	public class UnitTestExceptionExtension
 	{
 		public UnitTestExceptionExtension(ITestOutputHelper testOutputHelper) { _testOutputHelper = testOutputHelper; }
-
-		private readonly ITestOutputHelper _testOutputHelper;
+        private readonly ITestOutputHelper _testOutputHelper;
 
 		[Fact] public void GetAnalyzedException_TestOpenAiApiCall_ResultIsReturned()
 		{

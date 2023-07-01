@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -17,9 +16,7 @@ namespace ExceptionAnalyzer;
 public class ExceptionService
 {
 	[NotNull] private static readonly List<ChatMessage> ChatMessages = new ();
-
     [NotNull] internal static IOpenAi OpenAi => OpenAiService.Factory.Create();
-
     public static string ApiKey
     {
         set
@@ -47,7 +44,7 @@ public class ExceptionService
 	{
 		if (exception == null) throw new ArgumentNullException(nameof(exception));
 		List<ChatMessage> currentMessages = ChatMessages.ToList();
-		currentMessages.Add(new ChatMessage{Role = ChatRole.User, Content = $"{CultureInfo.CurrentCulture.TwoLetterISOLanguageName}:\r\n{exception.Message}\r\n{exception.StackTrace}"});
+		currentMessages.Add(new ChatMessage{Role = ChatRole.User, Content = exception.GetExceptionTextForAi()});
 		string response = null;
 		try
         {
