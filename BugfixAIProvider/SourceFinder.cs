@@ -6,7 +6,9 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp.Resolver;
 using ICSharpCode.Decompiler.CSharp.Syntax;
 using ICSharpCode.Decompiler.CSharp.TypeSystem;
+using ICSharpCode.Decompiler.Semantics;
 using ICSharpCode.Decompiler.TypeSystem;
+using System.Reflection.Metadata;
 
 namespace BugfixAIProvider;
 
@@ -85,7 +87,14 @@ public class SourceFinder
         if (codePointer.CodeType != CodeType.Method) return type.ToString();
         IEnumerable<MethodDeclaration> methods = type.Children.OfType<MethodDeclaration>();
         IEnumerable<AstType> astTypes = codePointer.ParameterTypeFullNames.Select(AstType.Create).ToList();
-        IEnumerable<MethodDeclaration> methodDeclarations = methods.Where(methods => methods.Name == methodName && methods.Parameters.Equals(astTypes));
+        foreach (ParameterDeclaration parameter in methods.Last().Parameters)
+        {
+            ISymbol symbol = parameter.Type.GetSymbol();
+            ITypeDefinition typeDefinition = symbol as ITypeDefinition;
+            FullTypeName fullTypeName = typeDefinition.FullTypeName;
+
+        }
+        IEnumerable<MethodDeclaration> methodDeclarations = methods.Where(md => md.Name == methodName && md.Parameters.Equals(astTypes));
         MethodDeclaration method = type.Children.OfType<MethodDeclaration>().ToList()[2];
         return method.ToString();
     }
