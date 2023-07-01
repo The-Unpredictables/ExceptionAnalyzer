@@ -3,7 +3,10 @@ using System.Reflection;
 using BugfixAIProvider.Models;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler;
+using ICSharpCode.Decompiler.CSharp.Resolver;
 using ICSharpCode.Decompiler.CSharp.Syntax;
+using ICSharpCode.Decompiler.CSharp.TypeSystem;
+using ICSharpCode.Decompiler.TypeSystem;
 
 namespace BugfixAIProvider;
 
@@ -32,7 +35,9 @@ public class SourceFinder
         {
             AssemblyName assembly = Assembly.LoadFrom(fileInfo.FullName).GetName();
             if (SyntaxTrees.ContainsKey(assembly)) continue;
-            SyntaxTrees.TryAdd(assembly, new CSharpDecompiler(fileInfo.FullName, new DecompilerSettings()).DecompileWholeModuleAsSingleFile());
+            DecompilerSettings decompilerSettings = new();
+            decompilerSettings.UsingDeclarations = false;
+            SyntaxTrees.TryAdd(assembly, new CSharpDecompiler(fileInfo.FullName, decompilerSettings).DecompileWholeModuleAsSingleFile());
         }
     }
 
@@ -78,7 +83,10 @@ public class SourceFinder
         NamespaceDeclaration ns = syntaxTreePair.Value.Children.OfType<NamespaceDeclaration>().First(ns => ns.Name == namespaceName);
         TypeDeclaration type = ns.Children.OfType<TypeDeclaration>().First(type => type.Name == typeName);
         if (codePointer.CodeType != CodeType.Method) return type.ToString();
-        MethodDeclaration method = type.Children.OfType<MethodDeclaration>().First(method => method.Name == methodName);
+        IEnumerable<MethodDeclaration> methods = type.Children.OfType<MethodDeclaration>();
+        IEnumerable<AstType> astTypes = codePointer.ParameterTypeFullNames.Select(AstType.Create).ToList();
+        IEnumerable<MethodDeclaration> methodDeclarations = methods.Where(methods => methods.Name == methodName && methods.Parameters.Equals(astTypes));
+        MethodDeclaration method = type.Children.OfType<MethodDeclaration>().ToList()[2];
         return method.ToString();
     }
 }

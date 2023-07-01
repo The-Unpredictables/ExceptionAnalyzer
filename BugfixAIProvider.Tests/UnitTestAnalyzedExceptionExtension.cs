@@ -6,6 +6,14 @@ namespace BugfixAIProvider.Tests
     public class UnitTestAnalyzedExceptionExtension
     {
         [Fact]
+        public void DecompileSourceCode_CallTheBugfixAIApiWithAnException_GetTheBugfixForTheException()
+        {
+            SourceFinder sourceFinder = new();
+            CodePointer codePointer = new () { FullName = "BugfixAIProvider.Tests.ExampleType.ExampleMethod", CodeType = CodeType.Method, ParameterTypeFullNames = new List<string> { "System.String", "BugfixAIProvider.Tests.ForeignNamespace.ForeignType" }};
+            sourceFinder.GetByFullName(codePointer);
+        }
+        
+        [Fact]
         public void TryDevelopBugfix_CallTheBugfixAIApiWithAnException_GetTheBugfixForTheException()
         {
             #region Arrange
