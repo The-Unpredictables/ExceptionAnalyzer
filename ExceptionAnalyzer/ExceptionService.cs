@@ -38,9 +38,9 @@ public class ExceptionService
 		ChatMessages.Add(new ChatMessage {Role = ChatRole.Assistant, Content = "{\r\n\"errorAnalysis\": \"The exception is due to a System.MissingFieldException in the ViewModelState constructor, which led to a chain of exceptions, causing the application to terminate. This could be caused by a missing field, property or parameter in the ViewModelState class or its dependencies.\",\r\n\"userMessage\": \"An error has occurred while initializing the application. Please contact the support team for assistance.\",\r\n\"developerDetails\": \"The System.MissingFieldException occurred in the ViewModelState constructor at Magnetic.Presentation.ViewModels.ViewModelState..ctor. This caused a series of ResolutionFailedExceptions, ActivationExceptions, XamlParseExceptions, RegionCreationExceptions, and UpdateRegionsExceptions throughout the application. The root cause likely lies in the ViewModelState class or its dependencies.\",\r\n\"solutions\": [\r\n\"Check the ViewModelState class and its dependencies for any missing fields, properties or parameters.\",\r\n\"Ensure the correct version of dependencies is being used and are compatible with each other.\",\r\n\"Verify that the ViewModelState constructor is receiving the correct parameters during object creation.\"\r\n]\r\n}"});
 	}
 
-	public AnalyzedException<T> GetAnalyzedException<T>([NotNull] T exception) where T : Exception => GetAnalyzedExceptionInternal(exception);
+	public async Task<AnalyzedException<T>> GetAnalyzedException<T>([NotNull] T exception) where T : Exception => await GetAnalyzedExceptionInternalAsync(exception);
 
-	internal AnalyzedException<T> GetAnalyzedExceptionInternal<T>([NotNull] T exception) where T : Exception
+	internal async Task<AnalyzedException<T>> GetAnalyzedExceptionInternalAsync<T>([NotNull] T exception) where T : Exception
 	{
 		if (exception == null) throw new ArgumentNullException(nameof(exception));
 		List<ChatMessage> currentMessages = ChatMessages.ToList();
@@ -48,16 +48,15 @@ public class ExceptionService
 		string response = null;
 		try
         {
-            ChatRequestBuilder requestBuilder = OpenAi.Chat.Request(currentMessages).WithModel(TextModelType.Gpt4_Snapshot.ToModelId()).WithTemperature(1).SetMaxTokens(3000);
-            Task<ChatResult> task = requestBuilder.ExecuteAsync().AsTask();
-            task.Wait(300_000);
-			if (!task.IsCompleted) throw new TimeoutException("Request to OpenAI timed out");
-			ChatMessage openAiMessage = task.Result?.Choices?.FirstOrDefault()?.Message;
+            ChatRequestBuilder requestBuilder = OpenAi.Chat.RequestCollection(currentMessages)?.WithModel(TextModelType.Gpt4_Snapshot.ToModelId()).WithTemperature(1).SetMaxTokens(3000);
+            ChatResult chatResult = await requestBuilder?.ExecuteAsync().AsTask()!;
+            ChatMessage openAiMessage = chatResult?.Choices?.FirstOrDefault()?.Message;
 			response = openAiMessage?.Content;
 		} catch (Exception e)
 		{
 			Console.WriteLine(e);
-		}
+            throw e;
+        }
 
 		AnalyzedException<T> analyzedException = new (exception);
 		if (!string.IsNullOrWhiteSpace(response)) analyzedException.MapAnalysis(JsonConvert.DeserializeObject<InternalAnalyzedException>(response));

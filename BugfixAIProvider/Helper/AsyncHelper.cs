@@ -1,4 +1,4 @@
-﻿namespace BugfixAIProvider.Helper;
+﻿namespace BugfixAiClient.Helper;
 
 public static class AsyncHelper
 {

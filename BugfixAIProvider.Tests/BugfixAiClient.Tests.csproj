@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BugfixAIProvider\BugfixAIProvider.csproj" />
+    <ProjectReference Include="..\BugfixAIProvider\BugfixAiClient.csproj" />
   </ItemGroup>
 
 </Project>

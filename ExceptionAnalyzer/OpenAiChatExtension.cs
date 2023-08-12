@@ -8,7 +8,7 @@ namespace ExceptionAnalyzer
 {
     internal static class OpenAiChatExtension
     {
-        internal static ChatRequestBuilder Request(this IOpenAiChat chat, [NotNull] IEnumerable<ChatMessage> messages)
+        internal static ChatRequestBuilder RequestCollection(this IOpenAiChat chat, [NotNull] IEnumerable<ChatMessage> messages)
         {
             if (messages == null) throw new ArgumentNullException(nameof(messages));
             ChatRequestBuilder chatRequestBuilder = chat.Request(messages.First());

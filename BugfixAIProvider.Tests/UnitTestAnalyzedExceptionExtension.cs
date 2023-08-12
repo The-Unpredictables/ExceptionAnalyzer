@@ -1,7 +1,7 @@
-using BugfixAIProvider.Models;
+using BugfixAiClient.Models;
 using Xunit.Sdk;
 
-namespace BugfixAIProvider.Tests
+namespace BugfixAiClient.Tests
 {
     public class UnitTestAnalyzedExceptionExtension
     {
@@ -9,7 +9,7 @@ namespace BugfixAIProvider.Tests
         public void DecompileSourceCode_CallTheBugfixAIApiWithAnException_GetTheBugfixForTheException()
         {
             SourceFinder sourceFinder = new();
-            CodePointer codePointer = new () { FullName = "BugfixAIProvider.Tests.ExampleType.ExampleMethod", CodeType = CodeType.Method, ParameterTypeFullNames = new List<string> { "System.String", "BugfixAIProvider.Tests.ForeignNamespace.ForeignType" }};
+            CodePointer codePointer = new () { FullName = "BugfixAiClient.Tests.ExampleType.ExampleMethod", CodeType = CodeType.Method, ParameterTypeFullNames = new List<string> { "System.String", "BugfixAiClient.Tests.ForeignNamespace.ForeignType" }};
             sourceFinder.GetByFullName(codePointer);
         }
         

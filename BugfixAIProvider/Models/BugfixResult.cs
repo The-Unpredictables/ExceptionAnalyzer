@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace BugfixAIProvider.Models;
+namespace BugfixAiClient.Models;
 
 public class BugfixResult
 {

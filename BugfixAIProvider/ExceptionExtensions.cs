@@ -1,11 +1,11 @@
 ﻿using System.Globalization;
-using BugfixAIProvider.Models;
+using BugfixAiClient.Models;
 using ExceptionAnalyzer;
 using ExceptionAnalyzer.Models;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace BugfixAIProvider;
+namespace BugfixAiClient;
 
 public static class ExceptionExtensions
 {

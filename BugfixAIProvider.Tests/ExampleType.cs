@@ -1,6 +1,6 @@
-﻿using BugfixAIProvider.Tests.ForeignNamespace;
+﻿using BugfixAiClient.Tests.ForeignNamespace;
 
-namespace BugfixAIProvider.Tests;
+namespace BugfixAiClient.Tests;
 
 public class ExampleType
 {

@@ -47,7 +47,7 @@ namespace ExceptionAnalyzer.Tests
 
 			#region Act
 
-			//AnalyzedException<ArgumentNullException> analyzedExceptionInternal = exceptionService.GetAnalyzedExceptionInternal(testingException, openAiApiMock.Object!)!;
+			//AnalyzedException<ArgumentNullException> analyzedExceptionInternal = exceptionService.GetAnalyzedExceptionInternalAsync(testingException, openAiApiMock.Object!)!;
 
 			#endregion Act
 
@@ -87,7 +87,7 @@ namespace ExceptionAnalyzer.Tests
 
 			#region Act
 
-			AnalyzedException<Exception?> analyzedException = exception.GetAnalyzedException()!;
+			AnalyzedException<Exception?> analyzedException = exception.GetAnalyzedException().Result;
 
 			#endregion
 

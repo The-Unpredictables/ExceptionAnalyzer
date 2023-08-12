@@ -1,9 +1,9 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using BugfixAIProvider.Models;
+using BugfixAiClient.Models;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BugfixAIProvider;
+namespace BugfixAiClient;
 
 internal class ConnectionSetup
 {

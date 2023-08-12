@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Reflection;
-using BugfixAIProvider.Models;
+using BugfixAiClient.Models;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp.Resolver;
@@ -10,7 +10,7 @@ using ICSharpCode.Decompiler.Semantics;
 using ICSharpCode.Decompiler.TypeSystem;
 using System.Reflection.Metadata;
 
-namespace BugfixAIProvider;
+namespace BugfixAiClient;
 
 public class SourceFinder
 {
@@ -21,7 +21,8 @@ public class SourceFinder
     {
         Assembly executingAssembly = Assembly.GetExecutingAssembly();
         BaseDirectory = new FileInfo(executingAssembly.Location).Directory!;
-        string baseNamespace = executingAssembly.FullName.Split(',').First().Split('.').First();
+        string? baseNamespace = executingAssembly.FullName?.Split(',').First().Split('.').FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(baseNamespace)) throw new ArgumentNullException(nameof(baseNamespace));
         SyntaxTrees.TryAdd(executingAssembly.GetName(), new CSharpDecompiler(executingAssembly.Location, new DecompilerSettings()).DecompileWholeModuleAsSingleFile());
 
         foreach (AssemblyName assembly in executingAssembly.GetReferencedAssemblies().Where(n => n.FullName.StartsWith(baseNamespace)))
@@ -78,21 +79,22 @@ public class SourceFinder
             default: throw new ArgumentException("CodeType not supported");
         }
 
-        KeyValuePair<AssemblyName, SyntaxTree?> syntaxTreePair = SyntaxTrees.Where(p => p.Value.Children.OfType<NamespaceDeclaration>().FirstOrDefault(ns => ns.Name == namespaceName) != null).FirstOrDefault();
+        KeyValuePair<AssemblyName, SyntaxTree?> syntaxTreePair = SyntaxTrees.FirstOrDefault(p => p.Value?.Children.OfType<NamespaceDeclaration>().FirstOrDefault(ns => ns.Name == namespaceName) != null);
         if (syntaxTreePair.Value == null) LoadAssembly(nameParts.First());
-        syntaxTreePair = SyntaxTrees.Where(p => p.Value.Children.OfType<NamespaceDeclaration>().FirstOrDefault(ns => ns.Name == namespaceName) != null).FirstOrDefault();
+        syntaxTreePair = SyntaxTrees.FirstOrDefault(p => p.Value.Children.OfType<NamespaceDeclaration>().FirstOrDefault(ns => ns.Name == namespaceName) != null);
+        //Do not return null. @Lukas.Schachner
         if (syntaxTreePair.Value == null) return null;
         NamespaceDeclaration ns = syntaxTreePair.Value.Children.OfType<NamespaceDeclaration>().First(ns => ns.Name == namespaceName);
         TypeDeclaration type = ns.Children.OfType<TypeDeclaration>().First(type => type.Name == typeName);
         if (codePointer.CodeType != CodeType.Method) return type.ToString();
         IEnumerable<MethodDeclaration> methods = type.Children.OfType<MethodDeclaration>();
-        IEnumerable<AstType> astTypes = codePointer.ParameterTypeFullNames.Select(AstType.Create).ToList();
+        IEnumerable<AstType>? astTypes = codePointer.ParameterTypeFullNames?.Select(AstType.Create).ToList();
         foreach (ParameterDeclaration parameter in methods.Last().Parameters)
         {
-            ISymbol symbol = parameter.Type.GetSymbol();
-            ITypeDefinition typeDefinition = symbol as ITypeDefinition;
-            FullTypeName fullTypeName = typeDefinition.FullTypeName;
-
+            ISymbol symbol = parameter.Type.GetSymbol() ?? throw new ArgumentNullException(nameof(symbol));
+            ITypeDefinition? typeDefinition = symbol as ITypeDefinition;
+            FullTypeName? fullTypeName = typeDefinition?.FullTypeName;
+            //What happened here?? @Lukas.Schachner
         }
         IEnumerable<MethodDeclaration> methodDeclarations = methods.Where(md => md.Name == methodName && md.Parameters.Equals(astTypes));
         MethodDeclaration method = type.Children.OfType<MethodDeclaration>().ToList()[2];

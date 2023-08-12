@@ -1,4 +1,4 @@
-﻿namespace BugfixAIProvider;
+﻿namespace BugfixAiClient;
 
 public enum CodeType
 {

@@ -1,4 +1,4 @@
-﻿namespace BugfixAIProvider.Tests.ForeignNamespace;
+﻿namespace BugfixAiClient.Tests.ForeignNamespace;
 
 public class ForeignType
 {
