@@ -34,7 +34,7 @@ namespace BugfixAiClient.Tests
 
             Task<BugfixResult?> bugfixTask = exception.TryDevelopBugfix();
             bugfixTask.Wait(90000000);
-            BugfixResult bugfixResult = bugfixTask.Result;
+            BugfixResult? bugfixResult = bugfixTask.Result;
 
             #endregion Act
 

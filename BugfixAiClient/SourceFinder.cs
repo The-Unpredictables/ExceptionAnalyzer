@@ -1,14 +1,10 @@
-﻿using System.Collections.Concurrent;
-using System.Reflection;
-using BugfixAiClient.Models;
-using ICSharpCode.Decompiler.CSharp;
+﻿using BugfixAiClient.Models;
 using ICSharpCode.Decompiler;
-using ICSharpCode.Decompiler.CSharp.Resolver;
+using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.CSharp.Syntax;
-using ICSharpCode.Decompiler.CSharp.TypeSystem;
-using ICSharpCode.Decompiler.Semantics;
 using ICSharpCode.Decompiler.TypeSystem;
-using System.Reflection.Metadata;
+using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace BugfixAiClient;
 
@@ -49,7 +45,6 @@ public class SourceFinder
         if (codePointer.FullName == null) throw new ArgumentNullException(nameof(codePointer.FullName));
 
         List<string> nameParts = codePointer.FullName.Split('.').ToList();
-        string methodName = string.Empty;
         string typeName;
         string namespaceName;
         switch (codePointer.CodeType)
@@ -60,7 +55,6 @@ public class SourceFinder
                     throw new ArgumentException("fullName must contain at least two dots");
                 }
 
-                methodName = nameParts.Last();
                 nameParts.RemoveAt(nameParts.Count - 1);
                 typeName = nameParts.Last();
                 nameParts.RemoveAt(nameParts.Count - 1);
@@ -81,22 +75,21 @@ public class SourceFinder
 
         KeyValuePair<AssemblyName, SyntaxTree?> syntaxTreePair = SyntaxTrees.FirstOrDefault(p => p.Value?.Children.OfType<NamespaceDeclaration>().FirstOrDefault(ns => ns.Name == namespaceName) != null);
         if (syntaxTreePair.Value == null) LoadAssembly(nameParts.First());
-        syntaxTreePair = SyntaxTrees.FirstOrDefault(p => p.Value.Children.OfType<NamespaceDeclaration>().FirstOrDefault(ns => ns.Name == namespaceName) != null);
-        //Do not return null. @Lukas.Schachner
+        syntaxTreePair = SyntaxTrees.FirstOrDefault(p => p.Value?.Children.OfType<NamespaceDeclaration>().FirstOrDefault(ns => ns.Name == namespaceName) != null);
+        
+        //Do not return null. What happens here? @Lukas.Schachner
         if (syntaxTreePair.Value == null) return null;
+        
         NamespaceDeclaration ns = syntaxTreePair.Value.Children.OfType<NamespaceDeclaration>().First(ns => ns.Name == namespaceName);
         TypeDeclaration type = ns.Children.OfType<TypeDeclaration>().First(type => type.Name == typeName);
         if (codePointer.CodeType != CodeType.Method) return type.ToString();
-        IEnumerable<MethodDeclaration> methods = type.Children.OfType<MethodDeclaration>();
+        List<MethodDeclaration> methods = type.Children.OfType<MethodDeclaration>().ToList();
         IEnumerable<AstType>? astTypes = codePointer.ParameterTypeFullNames?.Select(AstType.Create).ToList();
         foreach (ParameterDeclaration parameter in methods.Last().Parameters)
         {
             ISymbol symbol = parameter.Type.GetSymbol() ?? throw new ArgumentNullException(nameof(symbol));
             ITypeDefinition? typeDefinition = symbol as ITypeDefinition;
-            FullTypeName? fullTypeName = typeDefinition?.FullTypeName;
-            //What happened here?? @Lukas.Schachner
         }
-        IEnumerable<MethodDeclaration> methodDeclarations = methods.Where(md => md.Name == methodName && md.Parameters.Equals(astTypes));
         MethodDeclaration method = type.Children.OfType<MethodDeclaration>().ToList()[2];
         return method.ToString();
     }
