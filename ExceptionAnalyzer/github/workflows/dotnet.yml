@@ -45,8 +45,6 @@ jobs:
         run: dotnet build ExceptionAnalyzer/ExceptionAnalyzer.csproj -c Release -p:Version='${{ steps.gitversion.outputs.SemVer }}'
       - name: Test
         run: dotnet test ExceptionAnalyzer.Tests/ExceptionAnalyzer.Tests.csproj --no-build --verbosity normal
-      - name: Build and Pack NuGet package
-        run: dotnet pack ExceptionAnalyzer/ExceptionAnalyzer.csproj -p:Version='${{ steps.gitversion.outputs.SemVer }}' -c Release
       - name: Upload NuGet package to GitHub
         uses: actions/upload-artifact@v2
         with:
