@@ -5,6 +5,7 @@
         <ImplicitUsings>disable</ImplicitUsings>
         <LangVersion>10</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <AssemblyName>ExceptionAInalyzer</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
