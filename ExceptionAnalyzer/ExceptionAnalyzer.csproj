@@ -6,7 +6,7 @@
         <LangVersion>10</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AssemblyName>ExceptionAInalyzer</AssemblyName>
-        <PackageIcon>..\logo.png</PackageIcon>
+        <PackageIcon>logo.png</PackageIcon>
         <PackageProjectUrl>https://github.com/The-Unpredictables/ExceptionAnalyzer</PackageProjectUrl>
         <Description>ExceptionAnalyzer is a C# tool using the OpenAI API for interpreting complex data like error stack traces. It simplifies troubleshooting and error resolution by processing and clearly presenting relevant insights in a user-friendly way, benefiting both users and developers.</Description>
         <Copyright>Stefan S. Bechtel</Copyright>
@@ -23,6 +23,10 @@
         <PackagePath>\</PackagePath>
       </None>
 	    <None Include="..\README.md">
+		    <Pack>True</Pack>
+		    <PackagePath>\</PackagePath>
+	    </None>
+	    <None Include="..\logo.png">
 		    <Pack>True</Pack>
 		    <PackagePath>\</PackagePath>
 	    </None>
