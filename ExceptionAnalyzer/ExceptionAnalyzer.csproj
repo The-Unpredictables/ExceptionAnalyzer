@@ -6,7 +6,7 @@
         <LangVersion>10</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AssemblyName>ExceptionAInalyzer</AssemblyName>
-        <ApplicationIcon>gfx\exceptionana200.png</ApplicationIcon>
+        <ApplicationIcon>gfx\exceptionana200.ico</ApplicationIcon>
         <PackageIcon>exceptionana200.png</PackageIcon>
         <PackageProjectUrl>https://github.com/The-Unpredictables/ExceptionAnalyzer</PackageProjectUrl>
         <Description>ExceptionAnalyzer is a C# tool using the OpenAI API for interpreting complex data like error stack traces. It simplifies troubleshooting and error resolution by processing and clearly presenting relevant insights in a user-friendly way, benefiting both users and developers.</Description>
@@ -19,7 +19,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="gfx\exceptionana200.png" />
+      <Content Include="gfx\exceptionana200.ico" />
     </ItemGroup>
 
     <ItemGroup>
