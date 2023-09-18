@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExceptionAnalyzer", "ExceptionAnalyzer\ExceptionAnalyzer.csproj", "{28E5B13D-3FFD-4B3B-9212-84763F494CA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExceptionAnalyzer.Tests", "ExceptionAnalyzer.Tests\ExceptionAnalyzer.Tests.csproj", "{9E07BABF-3456-4178-999E-CFA2E47B368A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExceptionAnalyzer.Tests", "ExceptionAnalyzer.Tests\ExceptionAnalyzer.Tests.csproj", "{9E07BABF-3456-4178-999E-CFA2E47B368A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
