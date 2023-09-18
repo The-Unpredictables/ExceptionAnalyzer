@@ -6,11 +6,40 @@
         <LangVersion>10</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AssemblyName>ExceptionAInalyzer</AssemblyName>
+        <ApplicationIcon>gfx\exceptionana200.png</ApplicationIcon>
+        <PackageIcon>exceptionana200.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/The-Unpredictables/ExceptionAnalyzer</PackageProjectUrl>
+        <Description>ExceptionAnalyzer is a C# tool using the OpenAI API for interpreting complex data like error stack traces. It simplifies troubleshooting and error resolution by processing and clearly presenting relevant insights in a user-friendly way, benefiting both users and developers.</Description>
+        <Copyright>Stefan S. Bechtel</Copyright>
+        <Authors>Stefan S. Bechtel &amp; Lukas Schachner</Authors>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/The-Unpredictables/ExceptionAnalyzer</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Content Include="gfx\exceptionana200.png" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
         <PackageReference Include="OpenAI" Version="1.7.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="gfx\exceptionana200.png">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
+      <None Update="LICENSE.txt">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
+      <None Update="README.md">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>
