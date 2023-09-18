@@ -1,6 +1,11 @@
 # ExceptionAnalyzer
 
-ExceptionAnalyzer is a C# library that utilizes the OpenAI API to analyze, interpret, and provide useful information from complex data such as error stack traces. It offers actionable insights to both users and developers, assisting in troubleshooting and error resolution by processing and presenting relevant details in a clear, concise, and user-friendly manner.
+[![Downloads](https://img.shields.io/nuget/dt/ExceptionAInalyzer?style=flat-square)](https://www.nuget.org/packages/ExceptionAInalyzer)
+[![Pipeline status](https://img.shields.io/github/actions/workflow/status/The-Unpredictables/ExceptionAnalyzer/dotnet.yml?branch=main&style=flat-square)](https://github.com/The-Unpredictables/ExceptionAnalyzer/actions/workflows/dotnet.yml)
+[![GitHub](https://img.shields.io/github/license/The-Unpredictables/ExceptionAnalyzer?style=flat-square)](https://github.com/The-Unpredictables/ExceptionAnalyzer/blob/main/LICENSE)
+
+| ![Logo](https://raw.githubusercontent.com/The-Unpredictables/ExceptionAnalyzer/main/logo.png) | ExceptionAnalyzer is a C# library that utilizes the OpenAI API to analyze, interpret, and provide useful information from complex data such as error stack traces. It offers actionable insights to both users and developers, assisting in troubleshooting and error resolution by processing and presenting relevant details in a clear, concise, and user-friendly manner. |
+| ---------- | ------- | 
 
 ## Features
 
