@@ -15,11 +15,22 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/The-Unpredictables/ExceptionAnalyzer</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
 
     <ItemGroup>
       <Content Include="gfx\exceptionana200.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\LICENSE">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
+      <None Include="..\README.md">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -29,14 +40,6 @@
 
     <ItemGroup>
       <None Update="gfx\exceptionana200.png">
-        <Pack>True</Pack>
-        <PackagePath>\</PackagePath>
-      </None>
-      <None Update="LICENSE.txt">
-        <Pack>True</Pack>
-        <PackagePath>\</PackagePath>
-      </None>
-      <None Update="README.md">
         <Pack>True</Pack>
         <PackagePath>\</PackagePath>
       </None>
