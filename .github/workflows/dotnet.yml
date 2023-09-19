@@ -40,16 +40,16 @@ jobs:
         with:
           dotnet-version: 6.0.x
       - name: Restore dependencies
-        run: dotnet restore ExceptionAnalyzer/ExceptionAnalyzer.csproj
+        run: dotnet restore ExceptionAInalyzer/ExceptionAInalyzer.csproj
       - name: Build
-        run: dotnet build ExceptionAnalyzer/ExceptionAnalyzer.csproj -c Release -p:Version='${{ steps.gitversion.outputs.SemVer }}'
+        run: dotnet build ExceptionAInalyzer/ExceptionAInalyzer.csproj -c Release -p:Version='${{ steps.gitversion.outputs.SemVer }}'
       - name: Test
-        run: dotnet test ExceptionAnalyzer.Tests/ExceptionAnalyzer.Tests.csproj --no-build --verbosity normal
+        run: dotnet test ExceptionAInalyzer.Tests/ExceptionAInalyzer.Tests.csproj --no-build --verbosity normal
       - name: Upload NuGet package to GitHub
         uses: actions/upload-artifact@v2
         with:
           name: nugetPackage
-          path: ExceptionAnalyzer/bin/Release/
+          path: ExceptionAInalyzer/bin/Release/
   
   release:
     runs-on: ubuntu-latest
