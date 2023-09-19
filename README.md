@@ -17,15 +17,15 @@
 
 ## Installation
 
-Include the `ExceptionAnalyzer` project in your solution and add a reference to it in your main project.
+Include the `ExceptionAInalyzer` project in your solution and add a reference to it in your main project.
 
 ## Usage
 
 To use the ExceptionAnalyzer, you will need an API key from OpenAI. Replace the placeholder API key in the `ApiKeyService` class with your own API key.
 
 ```csharp
-using ExceptionAnalyzer;
-using ExceptionAnalyzer.Models;
+using ExceptionAInalyzer;
+using ExceptionAInalyzer.Models;
 ```
 
 To analyze an exception, call the GetAnalyzedException extension method on an instance of an exception:
