@@ -8,7 +8,7 @@
         <AssemblyName>ExceptionAInalyzer</AssemblyName>
         <PackageIcon>logo.png</PackageIcon>
         <PackageProjectUrl>https://github.com/The-Unpredictables/ExceptionAnalyzer</PackageProjectUrl>
-        <Description>ExceptionAnalyzer is a C# tool using the OpenAI API for interpreting complex data like error stack traces. It simplifies troubleshooting and error resolution by processing and clearly presenting relevant insights in a user-friendly way, benefiting both users and developers.</Description>
+        <Description>ExceptionAInalyzer is a C# tool using the OpenAI API for interpreting complex data like error stack traces. It simplifies troubleshooting and error resolution by processing and clearly presenting relevant insights in a user-friendly way, benefiting both users and developers.</Description>
         <Copyright>Stefan S. Bechtel</Copyright>
         <Authors>Stefan S. Bechtel &amp; Lukas Schachner</Authors>
         <PackageReadmeFile>README.md</PackageReadmeFile>

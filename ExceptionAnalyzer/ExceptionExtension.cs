@@ -1,18 +1,20 @@
 ﻿#region Usings
 
 using System;
-using ExceptionAnalyzer.Models;
+using System.Threading.Tasks;
+using ExceptionAInalyzer.Models;
 using JetBrains.Annotations;
 
 #endregion
 
-namespace ExceptionAnalyzer;
+namespace ExceptionAInalyzer;
 
 public static class ExceptionExtension
 {
 
 	private static readonly ExceptionService ExceptionService = new ();
 	
-	public static AnalyzedException<T> GetAnalyzedException<T>([NotNull] this T exception) where T : Exception => ExceptionService.GetAnalyzedException(exception);
+	public static async Task<AnalyzedException<T>> GetAnalyzedExceptionAsync<T>([NotNull] this T exception) where T : Exception => await ExceptionService.GetAnalyzedException(exception);
+	public static AnalyzedException<T> GetAnalyzedException<T>([NotNull] this T exception) where T : Exception => ExceptionService.GetAnalyzedException(exception).Result;
 }
 

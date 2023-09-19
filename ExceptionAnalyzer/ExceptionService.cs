@@ -4,8 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using ExceptionAnalyzer.ApiKeyBalancer;
-using ExceptionAnalyzer.Models;
+using ExceptionAInalyzer.ApiKeyBalancer;
+using ExceptionAInalyzer.Models;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using OpenAI_API;
@@ -14,9 +14,9 @@ using OpenAI_API.Models;
 
 
 
-[assembly:InternalsVisibleTo("ExceptionAnalyzer.Tests")]
+[assembly:InternalsVisibleTo("ExceptionAInalyzer.Tests")]
 
-namespace ExceptionAnalyzer;
+namespace ExceptionAInalyzer;
 
 public class ExceptionService
 {
@@ -33,9 +33,9 @@ public class ExceptionService
 		ChatMessages.Add(new ChatMessage(ChatMessageRole.Assistant, "{\r\n\"errorAnalysis\": \"The exception is due to a System.MissingFieldException in the ViewModelState constructor, which led to a chain of exceptions, causing the application to terminate. This could be caused by a missing field, property or parameter in the ViewModelState class or its dependencies.\",\r\n\"userMessage\": \"An error has occurred while initializing the application. Please contact the support team for assistance.\",\r\n\"developerDetails\": \"The System.MissingFieldException occurred in the ViewModelState constructor at Magnetic.Presentation.ViewModels.ViewModelState..ctor. This caused a series of ResolutionFailedExceptions, ActivationExceptions, XamlParseExceptions, RegionCreationExceptions, and UpdateRegionsExceptions throughout the application. The root cause likely lies in the ViewModelState class or its dependencies.\",\r\n\"solutions\": [\r\n\"Check the ViewModelState class and its dependencies for any missing fields, properties or parameters.\",\r\n\"Ensure the correct version of dependencies is being used and are compatible with each other.\",\r\n\"Verify that the ViewModelState constructor is receiving the correct parameters during object creation.\"\r\n]\r\n}"));
 	}
 
-	public AnalyzedException<T> GetAnalyzedException<T>([NotNull] T exception) where T : Exception => GetAnalyzedExceptionInternal(exception, OpenAiApi);
+	public async Task<AnalyzedException<T>> GetAnalyzedException<T>([NotNull] T exception) where T : Exception => await GetAnalyzedExceptionInternal(exception, OpenAiApi);
 
-	internal AnalyzedException<T> GetAnalyzedExceptionInternal<T>([NotNull] T exception, IOpenAIAPI openAiApi) where T : Exception
+	internal async Task<AnalyzedException<T>> GetAnalyzedExceptionInternal<T>([NotNull] T exception, IOpenAIAPI openAiApi) where T : Exception
 	{
 		if (exception == null) throw new ArgumentNullException(nameof(exception));
 		List<ChatMessage> currentMessages = ChatMessages.ToList();
@@ -46,11 +46,8 @@ public class ExceptionService
 		try
 		{
 			authApiKey = openAiApi.Auth.ApiKey;
-			Task<ChatResult> chatCompletionAsync = openAiApi.Chat.CreateChatCompletionAsync(chatRequest);
-			chatCompletionAsync.Wait(300_000);
-			if (!chatCompletionAsync.IsCompleted) throw new TimeoutException("Request to OpenAI timed out");
-			ChatMessage openAiMessage = chatCompletionAsync.Result?.Choices?.FirstOrDefault()?.Message;
-			response = openAiMessage?.Content;
+			ChatResult chatResult = await openAiApi.Chat.CreateChatCompletionAsync(chatRequest);
+            response = chatResult?.Choices?.FirstOrDefault()?.Message?.Content;
 		} finally
 		{
 			ApiKeyService.Release(authApiKey);

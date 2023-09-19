@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 
 #endregion
 
-namespace ExceptionAnalyzer.Models
+namespace ExceptionAInalyzer.Models
 {
 	[DebuggerDisplay("UserMessage = {UserMessage}")]
 	public class AnalyzedException<T> : Exception where T : Exception

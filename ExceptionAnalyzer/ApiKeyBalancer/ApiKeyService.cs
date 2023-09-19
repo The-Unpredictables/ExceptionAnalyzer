@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 
 #endregion
 
-namespace ExceptionAnalyzer.ApiKeyBalancer
+namespace ExceptionAInalyzer.ApiKeyBalancer
 {
 	internal class ApiKey
 	{

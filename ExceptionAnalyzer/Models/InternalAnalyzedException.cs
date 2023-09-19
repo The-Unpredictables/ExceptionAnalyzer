@@ -6,9 +6,9 @@ using Newtonsoft.Json;
 
 #endregion
 
-[assembly: InternalsVisibleTo("ExceptionAnalyzer.Tests")]
+[assembly: InternalsVisibleTo("ExceptionAInalyzer.Tests")]
 
-namespace ExceptionAnalyzer.Models
+namespace ExceptionAInalyzer.Models
 {
 	internal class InternalAnalyzedException
 	{

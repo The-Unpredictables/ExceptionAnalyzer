@@ -1,8 +1,8 @@
 #region Usings
 
 using System.Globalization;
-using ExceptionAnalyzer.ApiKeyBalancer;
-using ExceptionAnalyzer.Models;
+using ExceptionAInalyzer.ApiKeyBalancer;
+using ExceptionAInalyzer.Models;
 using Moq;
 using Newtonsoft.Json;
 using OpenAI_API;
@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 #endregion
 
-namespace ExceptionAnalyzer.Tests
+namespace ExceptionAInalyzer.Tests
 {
 	public class UnitTestExceptionExtension
 	{
@@ -20,7 +20,7 @@ namespace ExceptionAnalyzer.Tests
 
 		private readonly ITestOutputHelper _testOutputHelper;
 
-		[Fact] public void GetAnalyzedException_TestOpenAiApiCall_ResultIsReturned()
+		[Fact] public async void GetAnalyzedException_TestOpenAiApiCall_ResultIsReturned()
 		{
 			#region Arrange
 
@@ -48,7 +48,7 @@ namespace ExceptionAnalyzer.Tests
 
 			#region Act
 
-			AnalyzedException<ArgumentNullException> analyzedExceptionInternal = exceptionService.GetAnalyzedExceptionInternal(testingException, openAiApiMock.Object!)!;
+			AnalyzedException<ArgumentNullException> analyzedExceptionInternal = await exceptionService.GetAnalyzedExceptionInternal(testingException, openAiApiMock.Object!)!;
 
 			#endregion Act
 
