@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExceptionAInalyzer", "ExceptionAnalyzer\ExceptionAInalyzer.csproj", "{28E5B13D-3FFD-4B3B-9212-84763F494CA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExceptionAInalyzer", "ExceptionAInalyzer\ExceptionAInalyzer.csproj", "{28E5B13D-3FFD-4B3B-9212-84763F494CA2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExceptionAInalyzer.Tests", "ExceptionAnalyzer.Tests\ExceptionAInalyzer.Tests.csproj", "{9E07BABF-3456-4178-999E-CFA2E47B368A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExceptionAInalyzer.Tests", "ExceptionAInalyzer.Tests\ExceptionAInalyzer.Tests.csproj", "{9E07BABF-3456-4178-999E-CFA2E47B368A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
