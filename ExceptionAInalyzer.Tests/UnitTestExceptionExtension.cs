@@ -1,7 +1,9 @@
 #region Usings
 
+using System;
 using System.Globalization;
 using ExceptionAInalyzer.ApiKeyBalancer;
+using ExceptionAInalyzer.Interfaces;
 using ExceptionAInalyzer.Models;
 using Moq;
 using Newtonsoft.Json;
@@ -37,7 +39,7 @@ namespace ExceptionAInalyzer.Tests
 									}";
 			InternalAnalyzedException internalAnalyzedException = JsonConvert.DeserializeObject<InternalAnalyzedException>(response)!;
 			ApiKeyService.Register(key);
-			ChatResult chatResult = new() {Choices = new[] {new ChatChoice {Message = new ChatMessage {Content = response}}}};
+			ChatResult chatResult = new() {Choices = new[] {new ChatChoice {Message = new ChatMessage {TextContent = response}}}};
 			Mock<IOpenAIAPI> openAiApiMock = new();
 			openAiApiMock.SetupProperty(api => api.Auth, new APIAuthentication(key));
 			openAiApiMock.Setup(api => api.Chat.CreateChatCompletionAsync(It.IsAny<ChatRequest>())).Returns(Task.FromResult(chatResult));
@@ -48,7 +50,7 @@ namespace ExceptionAInalyzer.Tests
 
 			#region Act
 
-			AnalyzedException<ArgumentNullException> analyzedExceptionInternal = await exceptionService.GetAnalyzedExceptionInternal(testingException, openAiApiMock.Object!)!;
+			AnalyzedException<ArgumentNullException> analyzedExceptionInternal = await exceptionService.GetAnalyzedExceptionInternal(testingException, openAiApiMock.Object, CultureInfo.CurrentCulture.TwoLetterISOLanguageName)!;
 
 			#endregion Act
 
@@ -102,6 +104,46 @@ namespace ExceptionAInalyzer.Tests
 
 			#endregion
 		}
+
+        [Fact] public void GetAnalyzedErrorInfo_SendErrorInfoToAiForAnalyze_AnalyzedErrorInfoFieldsAreFilled()
+        {
+            #region Arrange
+
+            ApiKeyService.Register(@"your key");
+            ErrorInfo? errorInfo = null;
+            List<int> zahlen = new()
+            {
+                1, 2, 3, 4,
+                13, 5
+            }; // 13 wird eine versteckte Exception auslösen
+            VersteckteException versteckteException = new();
+            try
+            {
+                int sum = versteckteException.BerechneSumme(zahlen);
+                _testOutputHelper.WriteLine("Sum: " + sum);
+            } catch (Exception? ex)
+            {
+                errorInfo = new ErrorInfo(ex.Message, ex.StackTrace);
+            }
+
+            #endregion
+
+            #region Act
+
+            AnalyzedErrorInfo<ErrorInfo?> analyzedErrorInfo = errorInfo.GetAnalyzedErrorInfo();
+
+            #endregion
+
+            #region Assert
+
+            Assert.NotNull(analyzedErrorInfo);
+            Assert.NotNull(analyzedErrorInfo.DeveloperDetails);
+            Assert.NotNull(analyzedErrorInfo.ErrorAnalysis);
+            Assert.NotNull(analyzedErrorInfo.UserMessage);
+            Assert.NotEmpty(analyzedErrorInfo.Suggestions);
+
+            #endregion
+        }
 	}
 
 	public class VersteckteException
@@ -127,8 +169,8 @@ namespace ExceptionAInalyzer.Tests
 
 		private int AddiereZahlen(int a, int b)
 		{
-			if (a == 13 || b == 13) // Beispiel f�r einen versteckten Fehler
-				throw new InvalidOperationException("Ung�ltiger Wert: 13 ist nicht erlaubt.");
+			if (a == 13 || b == 13) // Beispiel für einen versteckten Fehler
+				throw new InvalidOperationException("Ungültiger Wert: 13 ist nicht erlaubt.");
 			return a + b;
 		}
 	}

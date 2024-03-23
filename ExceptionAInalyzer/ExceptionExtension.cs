@@ -11,7 +11,6 @@ namespace ExceptionAInalyzer;
 
 public static class ExceptionExtension
 {
-
 	private static readonly ExceptionService ExceptionService = new ();
 	
 	public static async Task<AnalyzedException<T>> GetAnalyzedExceptionAsync<T>([NotNull] this T exception) where T : Exception => await ExceptionService.GetAnalyzedException(exception);
