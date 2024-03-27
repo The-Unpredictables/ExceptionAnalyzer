@@ -31,7 +31,7 @@ Include the `ExceptionAInalyzer` project in your solution and add a reference to
 
 ## 📊 Usage
 
-To use the ExceptionAnalyzer, you will need an API key from OpenAI. Replace the placeholder API key in the `ApiKeyService` class with your own API key.
+To use the ExceptionAnalyzer, you will need an API key from OpenAI. Use the SetApiKey Methode in ExceptionService.
 
 ```csharp
 using ExceptionAInalyzer;
