@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using ExceptionAInalyzer.ApiKeyBalancer;
 using ExceptionAInalyzer.Interfaces;
 using ExceptionAInalyzer.Models;
 using JetBrains.Annotations;
@@ -21,7 +20,7 @@ public class ExceptionService
 {
 	[NotNull] private static readonly List<ChatMessage> ChatMessages = new ();
 
-	[NotNull] private static IOpenAIAPI OpenAiApi => new OpenAIAPI(new APIAuthentication(ApiKeyService.Lend()));
+    [NotNull] private static IOpenAIAPI OpenAiApi;
 
 	public ExceptionService()
 	{
@@ -31,6 +30,11 @@ public class ExceptionService
 		ChatMessages.Add(new ChatMessage(ChatMessageRole.User, "en-US:\r\nApplication: Magnetic.exe\r\nFramework Version: v4.0.30319\r\nDescription: The process was terminated due to an unhandled exception.\r\nException Info: System.MissingFieldException\r\n   at Magnetic.Presentation.ViewModels.ViewModelState..ctor(Prism.Events.IEventAggregator, Magnetic.Core.Interfaces.IDeviceHandlerContainer, Unity.IUnityContainer, Magnetic.BusinessObjects.Interfaces.ISignalCollectionInformation, Magnetic.Core.Interfaces.IConnectionManager"));
 		ChatMessages.Add(new ChatMessage(ChatMessageRole.Assistant, "{\r\n\"errorAnalysis\": \"The exception is due to a System.MissingFieldException in the ViewModelState constructor, which led to a chain of exceptions, causing the application to terminate. This could be caused by a missing field, property or parameter in the ViewModelState class or its dependencies.\",\r\n\"userMessage\": \"An error has occurred while initializing the application. Please contact the support team for assistance.\",\r\n\"developerDetails\": \"The System.MissingFieldException occurred in the ViewModelState constructor at Magnetic.Presentation.ViewModels.ViewModelState..ctor. This caused a series of ResolutionFailedExceptions, ActivationExceptions, XamlParseExceptions, RegionCreationExceptions, and UpdateRegionsExceptions throughout the application. The root cause likely lies in the ViewModelState class or its dependencies.\",\r\n\"solutions\": [\r\n\"Check the ViewModelState class and its dependencies for any missing fields, properties or parameters.\",\r\n\"Ensure the correct version of dependencies is being used and are compatible with each other.\",\r\n\"Verify that the ViewModelState constructor is receiving the correct parameters during object creation.\"\r\n]\r\n}"));
 	}
+
+    public static void SetApiKey(string apiKey)
+    {
+        OpenAiApi = new OpenAIAPI(new APIAuthentication(apiKey));
+    }
 
 	public async Task<AnalyzedException<T>> GetAnalyzedException<T>([NotNull] T exception, CultureInfo userMessageLanguage = null) where T : Exception => await GetAnalyzedExceptionInternal(exception, OpenAiApi, (userMessageLanguage ?? CultureInfo.CurrentCulture).TwoLetterISOLanguageName);
 	public async Task<AnalyzedErrorInfo<T>> GetAnalyzedErrorInfo<T>([NotNull] T errorInfo) where T : IErrorInfo => await GetAnalyzedErrorInfoInternal(errorInfo, OpenAiApi);
@@ -61,16 +65,9 @@ public class ExceptionService
         ChatRequest chatRequest = new() {Model = Model.GPT4_Turbo, Temperature = 0.4, MaxTokens = 3000, Messages = currentMessages};
         string authApiKey = null;
         string response;
-        try
-        {
-            authApiKey = openAiApi.Auth.ApiKey;
-            ChatResult chatResult = await openAiApi.Chat.CreateChatCompletionAsync(chatRequest);
-            response = chatResult?.Choices?.FirstOrDefault()?.Message?.TextContent;
-        } finally
-        {
-            ApiKeyService.Release(authApiKey);
-        }
 
+        ChatResult chatResult = await openAiApi.Chat.CreateChatCompletionAsync(chatRequest);
+        response = chatResult?.Choices?.FirstOrDefault()?.Message?.TextContent;
         return response;
     }
 }
