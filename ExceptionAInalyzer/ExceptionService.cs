@@ -4,15 +4,13 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using ExceptionAInalyzer.ApiKeyBalancer;
+using ExceptionAInalyzer.Interfaces;
 using ExceptionAInalyzer.Models;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using OpenAI_API;
 using OpenAI_API.Chat;
 using OpenAI_API.Models;
-
-
 
 [assembly:InternalsVisibleTo("ExceptionAInalyzer.Tests")]
 
@@ -22,7 +20,7 @@ public class ExceptionService
 {
 	[NotNull] private static readonly List<ChatMessage> ChatMessages = new ();
 
-	[NotNull] private static IOpenAIAPI OpenAiApi => new OpenAIAPI(new APIAuthentication(ApiKeyService.Lend()));
+    [NotNull] private static IOpenAIAPI OpenAiApi;
 
 	public ExceptionService()
 	{
@@ -33,28 +31,43 @@ public class ExceptionService
 		ChatMessages.Add(new ChatMessage(ChatMessageRole.Assistant, "{\r\n\"errorAnalysis\": \"The exception is due to a System.MissingFieldException in the ViewModelState constructor, which led to a chain of exceptions, causing the application to terminate. This could be caused by a missing field, property or parameter in the ViewModelState class or its dependencies.\",\r\n\"userMessage\": \"An error has occurred while initializing the application. Please contact the support team for assistance.\",\r\n\"developerDetails\": \"The System.MissingFieldException occurred in the ViewModelState constructor at Magnetic.Presentation.ViewModels.ViewModelState..ctor. This caused a series of ResolutionFailedExceptions, ActivationExceptions, XamlParseExceptions, RegionCreationExceptions, and UpdateRegionsExceptions throughout the application. The root cause likely lies in the ViewModelState class or its dependencies.\",\r\n\"solutions\": [\r\n\"Check the ViewModelState class and its dependencies for any missing fields, properties or parameters.\",\r\n\"Ensure the correct version of dependencies is being used and are compatible with each other.\",\r\n\"Verify that the ViewModelState constructor is receiving the correct parameters during object creation.\"\r\n]\r\n}"));
 	}
 
-	public async Task<AnalyzedException<T>> GetAnalyzedException<T>([NotNull] T exception) where T : Exception => await GetAnalyzedExceptionInternal(exception, OpenAiApi);
+    public static void SetApiKey(string apiKey)
+    {
+        OpenAiApi = new OpenAIAPI(new APIAuthentication(apiKey));
+    }
 
-	internal async Task<AnalyzedException<T>> GetAnalyzedExceptionInternal<T>([NotNull] T exception, IOpenAIAPI openAiApi) where T : Exception
+	public async Task<AnalyzedException<T>> GetAnalyzedException<T>([NotNull] T exception, CultureInfo userMessageLanguage = null) where T : Exception => await GetAnalyzedExceptionInternal(exception, OpenAiApi, (userMessageLanguage ?? CultureInfo.CurrentCulture).TwoLetterISOLanguageName);
+	public async Task<AnalyzedErrorInfo<T>> GetAnalyzedErrorInfo<T>([NotNull] T errorInfo) where T : IErrorInfo => await GetAnalyzedErrorInfoInternal(errorInfo, OpenAiApi);
+
+	internal async Task<AnalyzedException<T>> GetAnalyzedExceptionInternal<T>([NotNull] T exception, IOpenAIAPI openAiApi, string userMessageLanguage) where T : Exception
 	{
 		if (exception == null) throw new ArgumentNullException(nameof(exception));
-		List<ChatMessage> currentMessages = ChatMessages.ToList();
-		currentMessages.Add(new ChatMessage(ChatMessageRole.User, $"{CultureInfo.CurrentCulture.TwoLetterISOLanguageName}:\r\n{exception.Message}\r\n{exception.StackTrace}"));
-		ChatRequest chatRequest = new() {Model = Model.ChatGPTTurbo, Temperature = 0.4, MaxTokens = 800, Messages = currentMessages};
-		string authApiKey = null;
-		string response;
-		try
-		{
-			authApiKey = openAiApi.Auth.ApiKey;
-			ChatResult chatResult = await openAiApi.Chat.CreateChatCompletionAsync(chatRequest);
-            response = chatResult?.Choices?.FirstOrDefault()?.Message?.Content;
-		} finally
-		{
-			ApiKeyService.Release(authApiKey);
-		}
+		string response = await GetAiResponse(openAiApi, exception.Message, exception.StackTrace, userMessageLanguage);
 
-		AnalyzedException<T> analyzedException = new (exception);
+        AnalyzedException<T> analyzedException = new (exception);
 		if (!string.IsNullOrWhiteSpace(response)) analyzedException.MapAnalysis(JsonConvert.DeserializeObject<InternalAnalyzedException>(response));
 		return analyzedException;
 	}
+    internal async Task<AnalyzedErrorInfo<T>> GetAnalyzedErrorInfoInternal<T>([NotNull] T errorInfo, IOpenAIAPI openAiApi) where T : IErrorInfo
+    {
+        if (errorInfo == null) throw new ArgumentNullException(nameof(errorInfo));
+        string response = await GetAiResponse(openAiApi, errorInfo.Message, errorInfo.StackTrace, errorInfo.UserMessageLanguageTwoLetter);
+
+        AnalyzedErrorInfo<T> analyzedErrorInfo = new (errorInfo);
+        if (!string.IsNullOrWhiteSpace(response)) analyzedErrorInfo.MapAnalysis(JsonConvert.DeserializeObject<InternalAnalyzedException>(response));
+        return analyzedErrorInfo;
+    }
+
+    private static async Task<string> GetAiResponse(IOpenAIAPI openAiApi, string message, string stackTrace, string userMessageLanguage)
+    {
+        List<ChatMessage> currentMessages = ChatMessages.ToList();
+        currentMessages.Add(new ChatMessage(ChatMessageRole.User, $"{userMessageLanguage}:\r\n{message}\r\n{stackTrace}"));
+        ChatRequest chatRequest = new() {Model = Model.GPT4_Turbo, Temperature = 0.4, MaxTokens = 3000, Messages = currentMessages};
+        string authApiKey = null;
+        string response;
+
+        ChatResult chatResult = await openAiApi.Chat.CreateChatCompletionAsync(chatRequest);
+        response = chatResult?.Choices?.FirstOrDefault()?.Message?.TextContent;
+        return response;
+    }
 }
